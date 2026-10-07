@@ -139,7 +139,12 @@ export default function Page() {
       </AnimatePresence>
 
       {invite.music && (
-        <audio ref={audio} src={invite.music} loop preload="auto" />
+        <audio
+          ref={audio}
+          src="/the-next-chapter/music.mp3"
+          loop
+          preload="auto"
+        />
       )}
       {invite.music && done && (
         <button
