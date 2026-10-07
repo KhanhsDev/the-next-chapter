@@ -10,7 +10,6 @@
  * Thêm người mới chỉ cần thêm 1 dòng vào NICKNAMES.
  */
 export const NICKNAMES: Record<string, string | string[]> = {
-  lan: "Chị Lan xinh đẹp",
   nhạn: "Chích chòe",
   ly: "Hương Ly",
   Thành: "bạn, chú Thành",

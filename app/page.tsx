@@ -110,7 +110,7 @@ function NameGate({ onSubmit }: { onSubmit: (name: string) => void }) {
             <br />
             Tên bắt đầu bằng{" "}
             <b className="font-semibold text-white/90">chữ cái in hoa</b>. Ví
-            dụ: <i>Lan</i>, <i>Minh</i>.
+            dụ: <i>Khánh</i>.
           </p>
 
           {error && (
