@@ -3,6 +3,7 @@ const nextConfig = {
   /* config options here */
   output: "export",
   trailingSlash: true,
+  cacheComponents: false,
   images: { unoptimized: true },
   experimental: {
     agentFeedback: true,
