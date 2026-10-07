@@ -15,7 +15,7 @@ export const NICKNAMES: Record<string, string | string[]> = {
   ly: "Hương Ly",
   Thành: "bạn, chú Thành",
   Ngân: "bạn Ngân",
-  khang: "Bạn Kháng",
+  khang: "Bạn Khang",
   hương: "Bạn Hương",
   thảo: "Bạn Thảo",
   đức: "Bạn Đức",
