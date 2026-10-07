@@ -43,7 +43,13 @@ export function formatName(name: string): string {
     .map((w) => w.charAt(0).toLocaleUpperCase("vi") + w.slice(1))
     .join(" ");
 }
-
+const NORMALIZED_NICKNAMES: Record<string, string | string[]> =
+  Object.fromEntries(
+    Object.entries(NICKNAMES).map(([key, value]) => [
+      normalizeName(key),
+      value,
+    ]),
+  );
 /**
  * Hàm config chính: nhận tên khách nhập, trả về danh sách cách hiển thị.
  * - Không có trong NICKNAMES -> [tên đã viết hoa]
@@ -51,7 +57,7 @@ export function formatName(name: string): string {
  * - Trùng tên (mảng) -> nhiều lựa chọn để khách tự chọn
  */
 export function getGuestOptions(input: string): string[] {
-  const nick = NICKNAMES[normalizeName(input)];
+  const nick = NORMALIZED_NICKNAMES[normalizeName(input)];
   if (!nick) return [formatName(input)];
   return Array.isArray(nick) ? nick : [nick];
 }
