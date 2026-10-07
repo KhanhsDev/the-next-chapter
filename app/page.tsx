@@ -11,12 +11,133 @@ import {
   VolumeX,
 } from "lucide-react";
 import { invite } from "./invite";
+import { getGuestOptions } from "./guests";
+
+/* ---------- Bước nhập tên người mở thiệp ---------- */
+function NameGate({ onSubmit }: { onSubmit: (name: string) => void }) {
+  const [value, setValue] = useState("");
+  const [error, setError] = useState("");
+  const [choices, setChoices] = useState<string[] | null>(null);
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const name = value.trim();
+    if (!name) {
+      setError("Bạn hãy nhập tên của mình nhé.");
+      return;
+    }
+
+    const options = getGuestOptions(name);
+
+    // Trùng tên (vd: 2 bạn tên Linh) -> cho khách chọn mình là ai
+    if (options.length > 1) {
+      setChoices(options);
+      return;
+    }
+
+    onSubmit(options[0]);
+  };
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-[60] grid place-items-center bg-[#071b2e] px-4"
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.6 }}
+    >
+      {choices ? (
+        <div className="flex w-full max-w-sm flex-col items-center gap-5 text-center">
+          <GraduationCap className="size-12 text-gold" strokeWidth={1.5} />
+
+          <h1 className="font-display text-3xl font-semibold text-white">
+            Bạn là ai nhỉ?
+          </h1>
+
+          <p className="text-sm font-light text-white/70">
+            Có nhiều bạn trùng tên, hãy chọn đúng bạn nhé.
+          </p>
+
+          <div className="flex w-full flex-col gap-3">
+            {choices.map((c) => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => onSubmit(c)}
+                className="cursor-pointer rounded-full border border-gold px-6 py-3 text-lg font-semibold text-gold transition-colors hover:bg-gold hover:text-[#071b2e]"
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setChoices(null)}
+            className="cursor-pointer text-sm text-white/60 underline underline-offset-4 hover:text-white"
+          >
+            Nhập lại tên
+          </button>
+        </div>
+      ) : (
+        <form
+          onSubmit={submit}
+          className="flex w-full max-w-sm flex-col items-center gap-5 text-center"
+        >
+          <GraduationCap className="size-12 text-gold" strokeWidth={1.5} />
+
+          <h1 className="font-display text-3xl font-semibold text-white">
+            Bạn tên là gì?
+          </h1>
+
+          <input
+            autoFocus
+            value={value}
+            maxLength={20}
+            onChange={(e) => {
+              setValue(e.target.value);
+              setError("");
+            }}
+            placeholder="Nhập tên của bạn"
+            aria-label="Tên của bạn"
+            aria-invalid={!!error}
+            className="w-full rounded-full border border-gold/70 bg-white/5 px-5 py-3 text-center text-lg text-white placeholder:text-white/40 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/40"
+          />
+
+          {/* Chú thích */}
+          <p className="text-sm font-light leading-relaxed text-white/70">
+            Chỉ cần nhập <b className="font-semibold text-white/90">tên</b>,
+            không cần họ.
+            <br />
+            Tên bắt đầu bằng{" "}
+            <b className="font-semibold text-white/90">chữ cái in hoa</b>. Ví
+            dụ: <i>Lan</i>, <i>Minh</i>.
+          </p>
+
+          {error && (
+            <p role="alert" className="text-sm text-[#ffb4a8]">
+              {error}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            className="cursor-pointer rounded-full bg-gold px-8 py-3 font-semibold text-[#071b2e] shadow-lg transition-transform hover:scale-105"
+          >
+            Tiếp tục
+          </button>
+        </form>
+      )}
+    </motion.div>
+  );
+}
 
 /* ---------- Phong bì mở đầu ---------- */
 function Envelope({
+  guest,
   onOpen,
   onDone,
 }: {
+  guest: string;
   onOpen: () => void;
   onDone: () => void;
 }) {
@@ -111,8 +232,15 @@ function Envelope({
           </AnimatePresence>
         </div>
 
-        <p className="text-sm font-light text-white/80">
-          {open ? "Đang mở thiệp..." : "Chạm vào mũ tốt nghiệp để mở thiệp"}
+        <p className="text-center text-sm font-light text-white/80">
+          {open ? (
+            "Đang mở thiệp..."
+          ) : (
+            <>
+              <b className="font-semibold text-gold">{guest}</b> ơi, chạm vào mũ
+              tốt nghiệp để mở thiệp
+            </>
+          )}
         </p>
       </div>
     </motion.div>
@@ -121,12 +249,13 @@ function Envelope({
 
 /* ---------- Trang chính ---------- */
 export default function Page() {
+  const [guest, setGuest] = useState<string | null>(null);
   const [done, setDone] = useState(false);
   const [playing, setPlaying] = useState(false);
-  const [photoOk, setPhotoOk] = useState(true);
 
   const audio = useRef<HTMLAudioElement>(null);
 
+  // Khoá cuộn trang cho tới khi mở xong thiệp
   useEffect(() => {
     document.body.style.overflow = done ? "" : "hidden";
 
@@ -155,9 +284,16 @@ export default function Page() {
 
   return (
     <>
+      {/* ---------- Nhập tên ---------- */}
+      <AnimatePresence>
+        {!guest && <NameGate onSubmit={setGuest} />}
+      </AnimatePresence>
+
       {/* ---------- Phong bì ---------- */}
       <AnimatePresence>
-        {!done && <Envelope onOpen={play} onDone={() => setDone(true)} />}
+        {guest && !done && (
+          <Envelope guest={guest} onOpen={play} onDone={() => setDone(true)} />
+        )}
       </AnimatePresence>
 
       {/* ---------- Nhạc ---------- */}
@@ -246,7 +382,10 @@ export default function Page() {
           {/* ---------- Nội dung ---------- */}
           <section className="px-8 pt-6 pb-18 text-center">
             <p className="text-[15px] text-white/90">
-              Trân trọng kính mời đến dự buổi Lễ Tốt Nghiệp của:
+              Trân trọng kính mời{" "}
+              {guest && <b className="font-semibold text-gold">{guest}</b>}
+              <br />
+              đến dự buổi Lễ Tốt Nghiệp của:
             </p>
 
             <p
