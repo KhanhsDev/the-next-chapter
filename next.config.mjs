@@ -1,17 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  /* config options here */
   output: "export",
-  // GitHub Pages cần static export
+
+  // GitHub Pages
+  basePath: "/the-next-chapter",
+  assetPrefix: "/the-next-chapter/",
+
   trailingSlash: true,
-  cacheComponents: false,
+
   images: {
     unoptimized: true,
   },
-  experimental: {
-    agentFeedback: true,
-  },
-  partialPrefetching: true,
+
   turbopack: {
     rules: {
       "*.css": {
