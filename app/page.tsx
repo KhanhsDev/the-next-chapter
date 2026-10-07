@@ -25,6 +25,7 @@ function Envelope({
 
   const start = () => {
     if (open) return;
+
     setOpen(true);
     onOpen();
     setTimeout(onDone, reduce ? 300 : 2100);
@@ -32,7 +33,7 @@ function Envelope({
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 grid place-items-center bg-deep px-4"
+      className="fixed inset-0 z-50 grid place-items-center bg-[#071b2e] px-4"
       exit={{ opacity: 0 }}
       transition={{ duration: 0.8 }}
     >
@@ -41,10 +42,12 @@ function Envelope({
           className="relative aspect-[4/3] w-[min(86vw,420px)]"
           style={{ perspective: 1000 }}
         >
-          <div className="absolute inset-0 rounded-sm bg-[#35050c]" />
+          {/* Mặt sau phong bì */}
+          <div className="absolute inset-0 rounded-sm bg-[#08233d]" />
 
+          {/* Tờ giấy bên trong */}
           <motion.div
-            className="absolute inset-x-[6%] top-[6%] bottom-[6%] z-20 grid place-items-center rounded-sm bg-cream px-4 text-center"
+            className="absolute inset-x-[6%] top-[6%] bottom-[6%] z-20 grid place-items-center rounded-sm bg-gradient-to-b from-[#eaf7ff] to-[#ccecff] px-4 text-center"
             animate={open ? { y: "-58%" } : { y: 0 }}
             transition={{
               delay: reduce ? 0 : 0.7,
@@ -53,42 +56,54 @@ function Envelope({
             }}
           >
             <div>
-              <p className="font-display text-xl italic text-wine">
+              <p className="font-display text-xl italic text-[#164e78]">
                 Lễ tốt nghiệp
               </p>
-              <p className="mt-1 font-display text-3xl font-semibold leading-tight text-teal">
+
+              <p className="mt-1 font-display text-3xl font-semibold leading-tight text-[#0b2a4a]">
                 {invite.name}
               </p>
             </div>
           </motion.div>
 
+          {/* Phần trước phong bì */}
           <div
-            className="absolute inset-0 z-30 bg-wine"
+            className="absolute inset-0 z-30 bg-[#164e78]"
             style={{
               clipPath: "polygon(0 0, 50% 62%, 100% 0, 100% 100%, 0 100%)",
             }}
           />
 
+          {/* Nắp phong bì */}
           <motion.div
-            className="absolute inset-0 bg-[#97152b]"
+            className="absolute inset-0 bg-[#246b98]"
             style={{
               clipPath: "polygon(0 0, 100% 0, 50% 62%)",
               transformOrigin: "top",
             }}
-            animate={{ rotateX: open ? 180 : 0, zIndex: open ? 10 : 40 }}
+            animate={{
+              rotateX: open ? 180 : 0,
+              zIndex: open ? 10 : 40,
+            }}
             transition={{
-              rotateX: { duration: reduce ? 0 : 0.7 },
-              zIndex: { delay: reduce ? 0 : 0.3, duration: 0 },
+              rotateX: {
+                duration: reduce ? 0 : 0.7,
+              },
+              zIndex: {
+                delay: reduce ? 0 : 0.3,
+                duration: 0,
+              },
             }}
           />
 
+          {/* Nút mở thiệp */}
           <AnimatePresence>
             {!open && (
               <motion.button
                 onClick={start}
                 aria-label="Mở thiệp"
                 exit={{ opacity: 0, scale: 0.6 }}
-                className="absolute left-1/2 top-[62%] z-50 grid size-14 -translate-x-1/2 -translate-y-1/2 cursor-pointer place-items-center rounded-full bg-gold text-deep shadow-lg transition-transform hover:scale-105"
+                className="absolute left-1/2 top-[62%] z-50 grid size-14 -translate-x-1/2 -translate-y-1/2 cursor-pointer place-items-center rounded-full bg-gold text-[#071b2e] shadow-lg transition-transform hover:scale-105"
               >
                 <GraduationCap className="size-7" />
               </motion.button>
@@ -96,7 +111,7 @@ function Envelope({
           </AnimatePresence>
         </div>
 
-        <p className="text-sm font-light text-cream/80">
+        <p className="text-sm font-light text-white/80">
           {open ? "Đang mở thiệp..." : "Chạm vào mũ tốt nghiệp để mở thiệp"}
         </p>
       </div>
@@ -109,10 +124,12 @@ export default function Page() {
   const [done, setDone] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [photoOk, setPhotoOk] = useState(true);
+
   const audio = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     document.body.style.overflow = done ? "" : "hidden";
+
     return () => {
       document.body.style.overflow = "";
     };
@@ -124,20 +141,26 @@ export default function Page() {
       .then(() => setPlaying(true))
       .catch(() => {});
   };
+
   const toggleMusic = () => {
     if (!audio.current) return;
+
     if (playing) {
       audio.current.pause();
       setPlaying(false);
-    } else play();
+    } else {
+      play();
+    }
   };
 
   return (
     <>
+      {/* ---------- Phong bì ---------- */}
       <AnimatePresence>
         {!done && <Envelope onOpen={play} onDone={() => setDone(true)} />}
       </AnimatePresence>
 
+      {/* ---------- Nhạc ---------- */}
       {invite.music && (
         <audio
           ref={audio}
@@ -146,11 +169,13 @@ export default function Page() {
           preload="auto"
         />
       )}
+
+      {/* ---------- Nút điều khiển nhạc ---------- */}
       {invite.music && done && (
         <button
           onClick={toggleMusic}
           aria-label={playing ? "Tắt nhạc" : "Bật nhạc"}
-          className="fixed right-4 bottom-4 z-40 grid size-11 cursor-pointer place-items-center rounded-full bg-gold text-deep shadow-lg"
+          className="fixed right-4 bottom-4 z-40 grid size-11 cursor-pointer place-items-center rounded-full bg-gold text-[#071b2e] shadow-lg transition-transform hover:scale-105"
         >
           {playing ? (
             <Volume2 className="size-5" />
@@ -160,91 +185,167 @@ export default function Page() {
         </button>
       )}
 
-      <main className="min-h-svh sm:py-8">
-        <article className="relative mx-auto max-w-[480px] overflow-hidden bg-cream shadow-2xl">
-          {/* khung viền vàng */}
+      {/* ---------- Thiệp ---------- */}
+      <main className="min-h-[100%] bg-[#071b2e] sm:py-8">
+        <article
+          className="
+            relative
+            mx-auto
+            max-w-[480px]
+            overflow-hidden
+            bg-gradient-to-b
+            from-[#0b2a4a]
+            via-[#164e78]
+            to-[#2f7fa3]
+            shadow-2xl
+          "
+        >
+          {/* Khung viền vàng */}
           <div className="pointer-events-none absolute inset-3 z-20 border-2 border-gold" />
+
           <div className="pointer-events-none absolute inset-[18px] z-20 border border-gold/60" />
 
-          {/* trang trí mũ và cuộn bằng */}
+          {/* ---------- Trang trí ---------- */}
+
           <GraduationCap
             className="absolute top-5 left-5 z-30 size-14 -rotate-12 text-gold drop-shadow"
             strokeWidth={1.5}
           />
+
           <ScrollText
             className="absolute top-6 right-6 z-30 size-12 rotate-12 text-gold drop-shadow"
             strokeWidth={1.5}
           />
+
           <GraduationCap
-            className="absolute right-6 bottom-6 z-30 size-12 rotate-12 text-wine"
+            className="absolute right-6 bottom-6 z-30 size-12 rotate-12 text-gold"
             strokeWidth={1.5}
           />
 
-          {/* phần đỏ trên cùng */}
-          <header className="bg-gradient-to-b from-wine to-deep px-8 pt-16 pb-28 text-center">
+          {/* ---------- Tiêu đề ---------- */}
+          <header className="px-8 pt-16 text-center">
             <p className="font-display text-2xl font-semibold tracking-[0.2em] text-gold">
               THIỆP MỜI
             </p>
-            <h1 className="mt-2 font-display text-[clamp(2.5rem,11vw,3.4rem)] font-semibold leading-tight tracking-wide text-[#f5e6c4]">
+
+            <h1
+              className="
+                mt-2
+                font-display
+                text-[clamp(2.5rem,11vw,3.4rem)]
+                font-semibold
+                leading-tight
+                tracking-wide
+                text-white
+              "
+            >
               LỄ TỐT NGHIỆP
             </h1>
           </header>
 
-          {/* phần kem: nội dung */}
-          <section className="px-8 pt-6 pb-20 text-center">
-            <p className="text-[15px] text-teal">
+          {/* ---------- Nội dung ---------- */}
+          <section className="px-8 pt-6 pb-18 text-center">
+            <p className="text-[15px] text-white/90">
               Trân trọng kính mời đến dự buổi Lễ Tốt Nghiệp của:
             </p>
-            <p className="mt-3 font-display text-[3rem] font-semibold uppercase  text-teal">
+
+            <p
+              className="
+                mt-3
+                font-display
+                text-[3rem]
+                font-semibold
+                uppercase
+                text-white
+              "
+            >
               {invite.name}
             </p>
 
-            <div className="mx-auto my-8 h-px w-4/5 bg-gold/70" />
+            {/* Đường kẻ */}
+            <div className="mx-auto my-2 h-px w-4/5 bg-gold/60" />
 
-            <p className="text-lg font-bold tracking-wide text-wine">
+            {/* ---------- Thời gian ---------- */}
+            <p className="text-lg font-bold tracking-wide text-gold">
               THỜI GIAN:
             </p>
-            <p className="mt-1 text-xl font-bold text-deep">
+
+            <p className="mt-1 text-xl font-bold text-white">
               {invite.timeLabel} | {invite.weekday.toUpperCase()}
             </p>
-            <p className="text-xl font-bold text-deep">
+
+            <p className="text-xl font-bold text-white">
               NGÀY {invite.dateText}
             </p>
 
-            <p className="mt-6 text-lg font-bold tracking-wide text-wine">
+            {/* ---------- Địa điểm ---------- */}
+            <p className="mt-6 text-lg font-bold tracking-wide text-gold">
               ĐỊA ĐIỂM:
             </p>
-            <p className="mt-1 text-xl font-bold uppercase text-deep">
+
+            <p className="mt-1 text-xl font-bold uppercase text-white">
               {invite.hall}
             </p>
-            <p className="text-xl font-bold uppercase leading-snug text-deep">
+
+            <p className="text-xl font-bold uppercase leading-snug text-white">
               {invite.school}
             </p>
-            <p className="mx-auto mt-2 max-w-xs text-sm text-ink/80">
+
+            <p className="mx-auto mt-2 max-w-xs text-sm text-white/80">
               ({invite.address})
             </p>
 
+            {/* Nút chỉ đường */}
             <a
               href={invite.mapLink}
               target="_blank"
               rel="noreferrer"
-              className="mt-5 inline-flex items-center gap-2 rounded-full border border-wine px-5 py-2 text-sm font-medium text-wine transition-colors hover:bg-wine hover:text-cream"
+              className="
+                mt-5
+                inline-flex
+                items-center
+                gap-2
+                rounded-full
+                border
+                border-gold
+                px-5
+                py-2
+                text-sm
+                font-medium
+                text-gold
+                transition-colors
+                hover:bg-gold
+                hover:text-[#071b2e]
+              "
             >
-              <MapPin className="size-4" /> Chỉ đường
+              <MapPin className="size-4" />
+              Chỉ đường
             </a>
 
-            <div className="mx-auto my-8 h-px w-4/5 bg-gold/70" />
+            {/* Đường kẻ */}
+            <div className="mx-auto my-8 h-px w-4/5 bg-gold/60" />
 
-            <p className="text-[15px] text-ink">
+            {/* ---------- Xác nhận tham dự ---------- */}
+            <p className="text-[15px] text-white/90">
               Xác nhận tham dự với <b>{invite.name}</b>
               <br />
               qua số điện thoại:
             </p>
+
             <a
               href={`tel:${invite.phone.replace(/\s/g, "")}`}
-              className="mt-2 inline-flex items-center gap-2 text-2xl font-bold text-deep"
+              className="
+                mt-2
+                inline-flex
+                items-center
+                gap-2
+                text-2xl
+                font-bold
+                text-white
+              "
             >
-              <Phone className="size-5 text-wine" /> {invite.phone}
+              <Phone className="size-5 text-gold" />
+              {invite.phone}
             </a>
           </section>
         </article>
