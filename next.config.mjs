@@ -1,15 +1,19 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  /* config options here */
   output: "export",
   trailingSlash: true,
+
+  // GitHub Pages cần static export
   cacheComponents: false,
-  images: { unoptimized: true },
+
+  images: {
+    unoptimized: true,
+  },
+
   experimental: {
     agentFeedback: true,
   },
-  cacheComponents: true,
-  partialPrefetching: true,
+
   turbopack: {
     rules: {
       "*.css": {
