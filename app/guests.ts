@@ -20,7 +20,7 @@ export const NICKNAMES: Record<string, string | string[]> = {
   đức: "Bạn Đức",
   linh: ["Máy bào", "Linh Loe"],
   lộc: "A Lộc",
-  na: "Vợ tui"
+  na: "Vợ tui",
 };
 
 /** Chuẩn hoá để so khớp: bỏ khoảng trắng thừa, bỏ dấu, viết thường. */
