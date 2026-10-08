@@ -91,7 +91,7 @@ function NameGate({ onSubmit }: { onSubmit: (name: string) => void }) {
 
           <input
             autoFocus
-            value={value}sssssssssssssssssssssss
+            value={value}
             maxLength={20}
             onChange={(e) => {
               setValue(e.target.value);
